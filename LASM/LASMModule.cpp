@@ -1,4 +1,5 @@
 #include "LASMModule.h"
+#include <cassert>
 #ifdef LLL_UNIX
 #include <dlfcn.h>
 #elif defined(LLL_WINDOWS)
@@ -25,7 +26,7 @@ public:
 #ifdef LLL_UNIX
 	void AddDll(void* dl)
 #elif defined(LLL_WINDOWS)
-	void AddDll(HANDLE dl)
+	void AddDll(HMODULE dl)
 #endif
 	{
 		m_Content.emplace_back(dl);
@@ -46,7 +47,7 @@ private:
 #ifdef LLL_UNIX
 	std::vector<void*> m_Content;
 #elif defined(LLL_WINDOWS)
-	std::vector<HANDLE> m_Content;
+	std::vector<HMODULE> m_Content;
 #endif
 };
 
