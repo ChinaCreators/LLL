@@ -1,10 +1,17 @@
-# Todo
+# LLL
 
-simplify to 6 commands:
+## instruction
 
-- call
-- set a0
-- set a1
-- set a2
-- set pc
-- exit
+-   call_ext
+-   set0a
+-   set1a
+-   set2a
+-   set0r
+-   set1r
+-   set2r
+-   ref0
+-   ref1
+-   ref2
+-   goto
+-   goto0
+-   if
