@@ -1,6 +1,7 @@
 #include "LASM.h"
 #include "LASMModule.h"
 #include <functional>
+#include <cassert>
 
 using namespace LASM;
 

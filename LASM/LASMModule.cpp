@@ -1,5 +1,4 @@
 #include "LASMModule.h"
-#include <cassert>
 #ifdef LLL_UNIX
 #include <dlfcn.h>
 #elif defined(LLL_WINDOWS)
