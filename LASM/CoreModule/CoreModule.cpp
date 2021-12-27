@@ -7,6 +7,10 @@ LASM_MODULE
 		std::cout << "test" << std::endl;
 		return 0;
 	});
+	LASM_MODULE_FUNCTION("read_ui64", [](LLL::Byte* pcontent, uint64_t a0, uint64_t a1, uint64_t a2) -> uint64_t {
+		std::cin >> *(uint64_t*)(pcontent + a0);
+		return 0;
+	});
 	LASM_MODULE_FUNCTION("print_a0", [](LLL::Byte* pcontent, uint64_t a0, uint64_t a1, uint64_t a2) -> uint64_t {
 		std::cout << a0 << std::endl;
 		return 0;
@@ -20,7 +24,11 @@ LASM_MODULE
 		return 0;
 	});
 	LASM_MODULE_FUNCTION("print_ui64", [](LLL::Byte* pcontent, uint64_t a0, uint64_t a1, uint64_t a2) -> uint64_t {
-		std::cout << *(uint64_t*)(pcontent + a0) << std::endl;
+		std::cout << *(uint64_t*)(pcontent + a0);
+		return 0;
+	});
+	LASM_MODULE_FUNCTION("print_char", [](LLL::Byte* pcontent, uint64_t a0, uint64_t a1, uint64_t a2) -> uint64_t {
+		std::cout << *(char*)(pcontent + a0);
 		return 0;
 	});
 	LASM_MODULE_FUNCTION("a2to_ui64", [](LLL::Byte* pcontent, uint64_t a0, uint64_t a1, uint64_t a2) -> uint64_t {
