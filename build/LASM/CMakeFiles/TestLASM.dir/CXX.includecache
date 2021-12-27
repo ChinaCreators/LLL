@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/creatorlxd/Project/lll/LASM/LASM.h
+../LLL/LLL.h
+/Users/creatorlxd/Project/lll/LLL/LLL.h
+vector
+-
+string
+-
+map
+-
+cstdint
+-
+
+/Users/creatorlxd/Project/lll/LASM/UnitTestForLASM.cpp
+iostream
+-
+cassert
+-
+LASM.h
+/Users/creatorlxd/Project/lll/LASM/LASM.h
+
+/Users/creatorlxd/Project/lll/LLL/LLL.h
+iostream
+-
+cstring
+-
+climits
+-
+cstdint
+-
+vector
+-
+functional
+-
+map
+-
+

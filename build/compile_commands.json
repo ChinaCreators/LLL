@@ -1,0 +1,52 @@
+[
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LLL",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LLL_lib.dir/LLL.cpp.o -c /Users/creatorlxd/Project/LLL/LLL/LLL.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LLL/LLL.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LLL",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/TestLLL.dir/UnitTestForLLL.cpp.o -c /Users/creatorlxd/Project/LLL/LLL/UnitTestForLLL.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LLL/UnitTestForLLL.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM_lib.dir/main.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/main.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/main.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM_lib.dir/LASM.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/LASM.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/LASM.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM_lib.dir/LASMModule.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/LASMModule.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/LASMModule.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM.dir/main.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/main.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/main.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM.dir/LASM.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/LASM.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/LASM.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/LASM.dir/LASMModule.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/LASMModule.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/LASMModule.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM",
+  "command": "/usr/bin/clang++   -g -std=gnu++17 -o CMakeFiles/TestLASM.dir/UnitTestForLASM.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/UnitTestForLASM.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/UnitTestForLASM.cpp"
+},
+{
+  "directory": "/Users/creatorlxd/Project/LLL/build/LASM/CoreModule",
+  "command": "/usr/bin/clang++ -DCoreModule_EXPORTS  -g -fPIC -std=gnu++17 -o CMakeFiles/CoreModule.dir/CoreModule.cpp.o -c /Users/creatorlxd/Project/LLL/LASM/CoreModule/CoreModule.cpp",
+  "file": "/Users/creatorlxd/Project/LLL/LASM/CoreModule/CoreModule.cpp"
+}
+]

@@ -1,0 +1,1 @@
+/usr/bin/clang++ -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/LASM.dir/main.cpp.o CMakeFiles/LASM.dir/LASM.cpp.o CMakeFiles/LASM.dir/LASMModule.cpp.o -o LASM  libLASM_lib.a ../LLL/libLLL_lib.a 

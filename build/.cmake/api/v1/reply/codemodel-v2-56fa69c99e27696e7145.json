@@ -1,0 +1,188 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "LLL",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "LLL",
+					"targetIndexes" : 
+					[
+						3,
+						5
+					]
+				},
+				{
+					"build" : "LASM",
+					"childIndexes" : 
+					[
+						3
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "LASM",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						4
+					]
+				},
+				{
+					"build" : "LASM/CoreModule",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "LASM/CoreModule",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "LLL"
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "LLL_lib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						5
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "LASM",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "CoreModule",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 3,
+					"id" : "CoreModule::@826eef327c60a992ef2a",
+					"jsonFile" : "target-CoreModule-Debug-f2db2c5c14acce1a75dc.json",
+					"name" : "CoreModule",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "LASM::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-LASM-Debug-1fd441ea151676f3955f.json",
+					"name" : "LASM",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "LASM_lib::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-LASM_lib-Debug-9375c3ff5504cff40124.json",
+					"name" : "LASM_lib",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "LLL_lib::@703188338268a2331fc5",
+					"jsonFile" : "target-LLL_lib-Debug-84448cb8ff30bf59e157.json",
+					"name" : "LLL_lib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "TestLASM::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-TestLASM-Debug-86d9b2eaeb879b0d01de.json",
+					"name" : "TestLASM",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "TestLLL::@703188338268a2331fc5",
+					"jsonFile" : "target-TestLLL-Debug-b40e762899b08aecee49.json",
+					"name" : "TestLLL",
+					"projectIndex" : 1
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/creatorlxd/Project/LLL/build",
+		"source" : "/Users/creatorlxd/Project/LLL"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 2
+	}
+}
