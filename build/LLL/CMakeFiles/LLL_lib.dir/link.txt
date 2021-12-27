@@ -1,2 +1,0 @@
-/usr/bin/ar qc libLLL_lib.a CMakeFiles/LLL_lib.dir/LLL.cpp.o
-/usr/bin/ranlib libLLL_lib.a

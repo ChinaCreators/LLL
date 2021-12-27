@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/TestLLL.dir/UnitTestForLLL.cpp.o -o TestLLL  libLLL_lib.a 

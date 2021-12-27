@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g -dynamiclib -Wl,-headerpad_max_install_names -o libCoreModule.dylib -install_name @rpath/libCoreModule.dylib CMakeFiles/CoreModule.dir/CoreModule.cpp.o 

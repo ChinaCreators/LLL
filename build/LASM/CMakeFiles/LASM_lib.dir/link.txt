@@ -1,2 +1,0 @@
-/usr/bin/ar qc libLASM_lib.a CMakeFiles/LASM_lib.dir/main.cpp.o CMakeFiles/LASM_lib.dir/LASM.cpp.o CMakeFiles/LASM_lib.dir/LASMModule.cpp.o
-/usr/bin/ranlib libLASM_lib.a

@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/TestLASM.dir/UnitTestForLASM.cpp.o -o TestLASM  libLASM_lib.a ../LLL/libLLL_lib.a 
