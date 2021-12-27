@@ -193,9 +193,14 @@ uint64_t LASM::Runner::RunCommands(const Compiler& c)
 			assert(sp != m.npos);
 			assert(sp != 0);
 			auto mod_name = m.substr(0, sp);
-			auto fs = GetFunctionsFromModule(mod_name);
+			auto miter = m_ExternalModuleCache.find(mod_name);
+			std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)>* pfs = nullptr;
+			if (miter == m_ExternalModuleCache.end())
+				pfs = &(m_ExternalModuleCache.emplace(std::make_pair(mod_name, std::move(GetFunctionsFromModule(mod_name)))).first->second);
+			else
+				pfs = &miter->second;
 			bool is_find = false;
-			for (auto& i : fs)
+			for (auto& i : *pfs)
 			{
 				if (i.first == m)
 				{
