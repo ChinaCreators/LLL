@@ -42,7 +42,7 @@ namespace LLL
 	private:
 		inline static constexpr const uint64_t sm_RegisterSize = 16;
 		uint64_t m_Registers[sm_RegisterSize];
-		std::vector<std::function<uint64_t(Byte*, uint64_t, uint64_t, uint64_t)>> m_ExternalFunctions;
+		std::vector<std::function<uint64_t(Byte*, uint64_t&, uint64_t&, uint64_t&)>> m_ExternalFunctions;
 		Byte* m_pMemory;
 		uint64_t m_MemorySize;
 	};

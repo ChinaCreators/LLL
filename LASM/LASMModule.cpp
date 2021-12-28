@@ -61,22 +61,22 @@ std::string GetDllName(const std::string& module_name)
 #endif
 }
 
-std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)> LASM::GetFunctionsFromModule(const std::string& module_name)
+std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> LASM::GetFunctionsFromModule(const std::string& module_name)
 {
 #ifdef LLL_UNIX
 	auto dl = dlopen(GetDllName(module_name).c_str(), RTLD_NOW | RTLD_GLOBAL);
 #elif defined(LLL_WINDOWS)
 	auto dl = LoadLibraryA(GetDllName(module_name).c_str());
 #endif
-	std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)> re;
-	void (*func)(std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)>&);
+	std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> re;
+	void (*func)(std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)>&);
 #ifdef LLL_UNIX
 	func = ((decltype(func))dlsym(dl, "RegisterModule"));
 #elif defined(LLL_WINDOWS)
 	func = ((decltype(func))GetProcAddress(dl, "RegisterModule"));
 #endif
 	func(re);
-	std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)> re2;
+	std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> re2;
 	for (auto& i : re)
 	{
 		re2.emplace(std::make_pair(module_name + ":" + std::string(i.first), i.second));	//convert to module_name:function_name

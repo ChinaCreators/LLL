@@ -84,7 +84,9 @@
 		"memory_resource": "cpp",
 		"stop_token": "cpp",
 		"cfenv": "cpp",
-		"cinttypes": "cpp"
+		"cinttypes": "cpp",
+		"__functional_base_03": "cpp",
+		"filesystem": "cpp"
 	},
 	"cmake.configureOnOpen": true
 }

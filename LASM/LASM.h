@@ -25,7 +25,7 @@ namespace LASM
 		uint64_t RunCommands(const Compiler& c);
 
 	private:
-		std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t, uint64_t, uint64_t)> m_ExternalFunctionCache;
+		std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> m_ExternalFunctionCache;
 	};
 
 }
