@@ -31,9 +31,10 @@ namespace LML
 
 	struct Variable
 	{
-		Variable(const Type& type, uint64_t addr);
+		Variable(const Type& type, uint64_t addr, bool is_tmp);
 		uint64_t m_Address;
 		const Type* m_pType;
+		bool m_IsTemporary;
 	};
 
 	enum class RealType : uint8_t
@@ -83,6 +84,8 @@ namespace LML
 
 	class LASMGenerator;
 
+	std::string GetBaseTypeNameById(uint64_t id);
+
 	class CompileUnit
 	{
 	public:
@@ -99,6 +102,12 @@ namespace LML
 
 		uint64_t RearrangeStaticVariable(uint64_t base);
 
+		Type* GetType(uint64_t type_id);
+		Variable* GetStaticVariable(uint64_t var_id);
+		Function* GetFunction(uint64_t func_id);
+
+		void SetMainFunctionId(uint64_t func_id);
+
 	private:
 		uint64_t GenerateTypeId();
 
@@ -107,6 +116,7 @@ namespace LML
 		std::vector<Type*> m_Types;
 		std::vector<Variable*> m_StaticVariables;
 		std::vector<Function*> m_Functions;
+		uint64_t m_MainFunctionId;
 	};
 
 	/*
@@ -119,6 +129,26 @@ namespace LML
 	*/
 	class LASMGenerator
 	{
+	public:
+		static std::string CallExternal(const std::string& func);
+		static std::string Set0A(uint64_t arg);
+		static std::string Set1A(uint64_t arg);
+		static std::string Set2A(uint64_t arg);
+		static std::string Set0R(uint64_t arg);
+		static std::string Set1R(uint64_t arg);
+		static std::string Set2R(uint64_t arg);
+		static std::string Ref0();
+		static std::string Ref1();
+		static std::string Ref2();
+		static std::string Goto(const std::string& label);
+		static std::string Goto0();
+		static std::string If();
+		static std::string Comment(const std::string& str);
+		static std::string Label(const std::string& label);
+
+		uint64_t GetSystemStaticVariableAddres() const;
+		uint64_t GetUserStaticVariableAddress() const;
+
 	public:
 		std::string Generate(CompileUnit& cu);
 
