@@ -1,5 +1,6 @@
 #include "LML.h"
 #include <cassert>
+#include <iostream>
 
 using namespace LML;
 
@@ -109,7 +110,10 @@ std::string LML::GetBaseTypeNameById(uint64_t id)
 	else if (id == 7)
 		return "d";
 	else
+	{
+		std::cout << "error type id:\t" << id << std::endl;
 		abort();
+	}
 }
 
 LML::CompileUnit::CompileUnit()
@@ -349,6 +353,7 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 
 	// user static variable
 	m_UserStaticVariableAddress = mm.Allocate(cu.GetStaticVariableTotalSize());
+	cu.RearrangeStaticVariable(m_UserStaticVariableAddress);
 
 	// generate code
 	re += LASMGenerator::Set0A(m_SystemStaticVariableAddress);

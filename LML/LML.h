@@ -9,7 +9,7 @@ namespace LML
 	{
 	public:
 		inline static constexpr uint64_t sm_DefaultMemorySize = LLL::VM::sm_DefaultMemorySize;
-		inline static constexpr uint64_t sm_DefaultStackSize = 0xffff;
+		inline static constexpr uint64_t sm_DefaultStackSize = 0xffff + 1;
 
 		MemoryManager(uint64_t mem_size = sm_DefaultMemorySize, uint64_t stack_size = sm_DefaultStackSize);
 

@@ -5,5 +5,6 @@
 
 namespace LML
 {
-	ActionGenerator GeneratePushBaseTypeAction(LML_LAZY(uint64_t) ssvar, const Variable& var);
+	ActionGenerator GeneratePushBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) gvar);
+	ActionGenerator GeneratePushAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) gvar);
 }
