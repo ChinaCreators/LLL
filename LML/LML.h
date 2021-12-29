@@ -109,10 +109,6 @@ namespace LML
 		void SetMainFunctionId(uint64_t func_id);
 
 	private:
-		uint64_t GenerateTypeId();
-
-	private:
-		uint64_t m_TypeId;
 		std::vector<Type*> m_Types;
 		std::vector<Variable*> m_StaticVariables;
 		std::vector<Function*> m_Functions;

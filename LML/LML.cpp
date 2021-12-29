@@ -117,7 +117,7 @@ std::string LML::GetBaseTypeNameById(uint64_t id)
 }
 
 LML::CompileUnit::CompileUnit()
-	: m_TypeId(0), m_MainFunctionId(0)
+	: m_MainFunctionId(0)
 {
 	Type* i8 = NewType();	 // 0
 	i8->m_RealType = RealType::BaseType;
@@ -162,11 +162,6 @@ LML::CompileUnit::~CompileUnit()
 		delete i;
 }
 
-uint64_t LML::CompileUnit::GenerateTypeId()
-{
-	return m_TypeId++;
-}
-
 uint64_t LML::CompileUnit::GetStaticVariableTotalSize() const
 {
 	uint64_t re = 0;
@@ -180,7 +175,7 @@ uint64_t LML::CompileUnit::GetStaticVariableTotalSize() const
 Type* LML::CompileUnit::NewType()
 {
 	auto re = new Type();
-	re->m_Id = GenerateTypeId();
+	re->m_Id = m_Types.size();
 	m_Types.emplace_back(re);
 	return re;
 }
