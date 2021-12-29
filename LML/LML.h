@@ -36,13 +36,13 @@ namespace LML
 		const Type* m_pType;
 	};
 
-	uint64_t GenerateTypeId();
-
 	enum class RealType : uint8_t
 	{
-		NormalType = 0,
-		PointerType = 1,
-		FunctionType = 2
+		UnknownType = 0,
+		BaseType = 1,
+		PointerType = 3,
+		FunctionType = 7,
+		CompositeType = 8
 	};
 
 	struct Type
@@ -77,11 +77,18 @@ namespace LML
 
 		Variable* NewStaticVariable(const Type& type, uint64_t addr);
 		Variable* NewTemporaryVariable(const Type& type, uint64_t addr);
+
+		uint64_t RearrangeStaticVariable(uint64_t base);
 	};
+
+	class LASMGenerator;
 
 	class CompileUnit
 	{
 	public:
+		friend class LASMGenerator;
+
+		CompileUnit();
 		~CompileUnit();
 
 		uint64_t GetStaticVariableTotalSize() const;
@@ -90,7 +97,13 @@ namespace LML
 		Variable* NewStaticVariable(const Type& type, uint64_t addr);
 		Function* NewFunction(const Type& return_type, const std::vector<const Type*>& parameters);
 
+		uint64_t RearrangeStaticVariable(uint64_t base);
+
 	private:
+		uint64_t GenerateTypeId();
+
+	private:
+		uint64_t m_TypeId;
 		std::vector<Type*> m_Types;
 		std::vector<Variable*> m_StaticVariables;
 		std::vector<Function*> m_Functions;
@@ -107,7 +120,11 @@ namespace LML
 	class LASMGenerator
 	{
 	public:
-		std::string Generate(const CompileUnit& cu);
+		std::string Generate(CompileUnit& cu);
+
+	private:
+		uint64_t m_SystemStaticVariableAddress;
+		uint64_t m_UserStaticVariableAddress;
 	};
 
 }

@@ -32,14 +32,8 @@ LML::Variable::Variable(const Type& type, uint64_t addr)
 {
 }
 
-uint64_t LML::GenerateTypeId()
-{
-	static uint64_t idx = 0;
-	return idx++;
-}
-
 LML::Type::Type()
-	: m_Id(0), m_SelfSize(0), m_RealType(RealType::NormalType)
+	: m_Id(0), m_SelfSize(0), m_RealType(RealType::UnknownType)
 {
 }
 
@@ -86,6 +80,52 @@ uint64_t LML::Function::GetStaticVariableTotalSize() const
 	return re;
 }
 
+uint64_t LML::Function::RearrangeStaticVariable(uint64_t base)
+{
+	for (auto i : m_StaticVariables)
+	{
+		i->m_Address = base;
+		base += i->m_pType->GetSize();
+	}
+	return base;
+}
+
+LML::CompileUnit::CompileUnit()
+	: m_TypeId(0)
+{
+	Type* i8 = NewType();	 // 0
+	i8->m_RealType = RealType::BaseType;
+	i8->m_SelfSize = 1;
+
+	Type* ui8 = NewType();	  // 1
+	ui8->m_RealType = RealType::BaseType;
+	ui8->m_SelfSize = 1;
+
+	Type* i32 = NewType();	  // 2
+	i32->m_RealType = RealType::BaseType;
+	i32->m_SelfSize = 4;
+
+	Type* ui32 = NewType();	   // 3
+	ui32->m_RealType = RealType::BaseType;
+	ui32->m_SelfSize = 4;
+
+	Type* i64 = NewType();	  // 4
+	i64->m_RealType = RealType::BaseType;
+	i64->m_SelfSize = 8;
+
+	Type* ui64 = NewType();	   // 5
+	ui64->m_RealType = RealType::BaseType;
+	ui64->m_SelfSize = 8;
+
+	Type* f = NewType();	// 6
+	f->m_RealType = RealType::BaseType;
+	f->m_SelfSize = 4;
+
+	Type* d = NewType();	// 7
+	d->m_RealType = RealType::BaseType;
+	d->m_SelfSize = 8;
+}
+
 LML::CompileUnit::~CompileUnit()
 {
 	for (auto i : m_Types)
@@ -94,6 +134,11 @@ LML::CompileUnit::~CompileUnit()
 		delete i;
 	for (auto i : m_Functions)
 		delete i;
+}
+
+uint64_t LML::CompileUnit::GenerateTypeId()
+{
+	return m_TypeId++;
 }
 
 uint64_t LML::CompileUnit::GetStaticVariableTotalSize() const
@@ -128,18 +173,34 @@ Function* LML::CompileUnit::NewFunction(const Type& return_type, const std::vect
 	return re;
 }
 
-std::string LML::LASMGenerator::Generate(const CompileUnit& cu)
+uint64_t LML::CompileUnit::RearrangeStaticVariable(uint64_t base)
+{
+	for (auto i : m_StaticVariables)
+	{
+		i->m_Address = base;
+		base += i->m_pType->GetSize();
+	}
+	for (auto i : m_Functions)
+		base = i->RearrangeStaticVariable(base);
+	return base;
+}
+
+std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 {
 	std::string re;
 	MemoryManager mm;
 	// system static variable
-	uint64_t ssvar_base = mm.Allocate(24);
-	uint64_t ebp = ssvar_base;
-	uint64_t esp = ssvar_base + 8;
-	uint64_t add_buf = ssvar_base + 16;
+	m_SystemStaticVariableAddress = mm.Allocate(24);
 	// system constant variable
 
 	// user static variable
-	uint64_t usvar_base = mm.Allocate(cu.GetStaticVariableTotalSize());
+	m_UserStaticVariableAddress = mm.Allocate(cu.GetStaticVariableTotalSize());
+
+	// generate code
+	for (auto i : cu.m_Functions)
+	{
+		for (auto j : i->m_ActionGenerators)
+			re += j.m_LASMGenerator();
+	}
 	return re;
 }
