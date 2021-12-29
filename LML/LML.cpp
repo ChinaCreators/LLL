@@ -306,6 +306,29 @@ std::string LML::LASMGenerator::Label(const std::string& label)
 	return ":" + label + "\n";
 }
 
+std::string LASMGenerator::LoadVarAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx)
+{
+	std::string re;
+	assert(arg_idx < 3);
+	if (!var.m_IsTemporary)
+	{
+		re += "set" + std::to_string(arg_idx) + "a " + std::to_string(var.m_Address) + "\n";
+	}
+	else
+	{
+		re += LASMGenerator::Set0A(add_buf);
+		re += LASMGenerator::Set1A(var.m_Address);
+		re += LASMGenerator::CallExternal("CoreModule:store_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		re += LASMGenerator::Set0A(ebp);
+		re += LASMGenerator::Set1A(add_buf);
+		re += LASMGenerator::Set2A(add_buf);
+		re += LASMGenerator::CallExternal("CoreModule:add_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		re += "set" + std::to_string(arg_idx) + "a " + std::to_string(add_buf) + "\n";
+		re += "ref" + std::to_string(arg_idx) + "\n";
+	}
+	return re;
+}
+
 uint64_t LML::LASMGenerator::GetSystemStaticVariableAddres() const
 {
 	return m_SystemStaticVariableAddress;
