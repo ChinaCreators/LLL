@@ -26,10 +26,11 @@ namespace LLL
 		inline static constexpr const uint64_t sm_Arg1 = 1;
 		inline static constexpr const uint64_t sm_Arg2 = 2;
 		inline static constexpr const uint64_t sm_Pc = 3;
+		inline static constexpr const uint64_t sm_DefaultMemorySize = 0xffffff;
 
 		uint64_t Run(const std::vector<Command>& cmds);
 
-		VM(uint64_t mem_size = 0xffffff);
+		VM(uint64_t mem_size = sm_DefaultMemorySize);
 		~VM();
 
 		template<typename Callable>
