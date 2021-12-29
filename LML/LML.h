@@ -145,7 +145,7 @@ namespace LML
 		static std::string If();
 		static std::string Comment(const std::string& str);
 		static std::string Label(const std::string& label);
-		static std::string LoadVarAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx);
+		static std::string LoadVariableAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx);
 
 		uint64_t GetSystemStaticVariableAddres() const;
 		uint64_t GetUserStaticVariableAddress() const;

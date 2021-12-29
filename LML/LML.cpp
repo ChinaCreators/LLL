@@ -306,7 +306,7 @@ std::string LML::LASMGenerator::Label(const std::string& label)
 	return ":" + label + "\n";
 }
 
-std::string LASMGenerator::LoadVarAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx)
+std::string LASMGenerator::LoadVariableAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx)
 {
 	std::string re;
 	assert(arg_idx < 3);
