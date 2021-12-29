@@ -50,7 +50,7 @@ void TestLASMGenerator()
 	Variable& tv1 = *func.NewTemporaryVariable(t_int64, 0);
 	Variable& sv3 = *cu.NewStaticVariable(t_struct1, 0);
 
-	func.m_ActionGenerators.emplace_back(GeneratePushAction(std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen), [&tv1] { return tv1; }));
+	func.m_ActionGenerators.emplace_back(GeneratePushAction(std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen), [&tv1]() { return tv1; }));
 	func.m_ActionGenerators.emplace_back(GeneratePushAction(std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen), [&sv3]() { return sv3; }));
 
 	auto result_str = gen.Generate(cu);
