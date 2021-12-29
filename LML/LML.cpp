@@ -328,6 +328,12 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 	m_UserStaticVariableAddress = mm.Allocate(cu.GetStaticVariableTotalSize());
 
 	// generate code
+	re += LASMGenerator::Set0A(m_SystemStaticVariableAddress);
+	re += LASMGenerator::Set1A(0);
+	re += LASMGenerator::CallExternal("CoreModule:store_ui64");
+	re += LASMGenerator::Set0A(m_SystemStaticVariableAddress + 8);
+	re += LASMGenerator::Set1A(0);
+	re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 	re += LASMGenerator::Goto("function_" + std::to_string(cu.m_MainFunctionId));
 
 	uint64_t func_cnt = 0;
