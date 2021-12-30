@@ -46,8 +46,8 @@ uint64_t LML::Type::GetSize() const
 	return re;
 }
 
-LML::Function::Function(const Type& return_type, const std::vector<const Type*>& parameters)
-	: m_Return(&return_type), m_Parameters(parameters), m_pType(nullptr)
+LML::Function::Function(const Type& return_type, const std::vector<const Type*>& parameters, uint64_t func_id)
+	: m_Return(&return_type), m_Parameters(parameters), m_pType(nullptr), m_FunctionId(func_id)
 {
 }
 
@@ -59,9 +59,9 @@ LML::Function::~Function()
 		delete i;
 }
 
-Variable* LML::Function::NewStaticVariable(const Type& type, uint64_t addr)
+Variable* LML::Function::NewStaticVariable(const Type& type)
 {
-	auto re = new Variable(type, addr, false);
+	auto re = new Variable(type, 0, false);
 	m_StaticVariables.emplace_back(re);
 	return re;
 }
@@ -158,6 +158,8 @@ LML::CompileUnit::~CompileUnit()
 		delete i;
 	for (auto i : m_StaticVariables)
 		delete i;
+	for (auto i : m_ConstantVariables)
+		delete i;
 	for (auto i : m_Functions)
 		delete i;
 }
@@ -172,6 +174,14 @@ uint64_t LML::CompileUnit::GetStaticVariableTotalSize() const
 	return re;
 }
 
+uint64_t LML::CompileUnit::GetConstantVariableTotalSize() const
+{
+	uint64_t re = 0;
+	for (auto i : m_ConstantVariables)
+		re += i->m_pType->GetSize();
+	return re;
+}
+
 Type* LML::CompileUnit::NewType()
 {
 	auto re = new Type();
@@ -180,16 +190,23 @@ Type* LML::CompileUnit::NewType()
 	return re;
 }
 
-Variable* LML::CompileUnit::NewStaticVariable(const Type& type, uint64_t addr)
+Variable* LML::CompileUnit::NewStaticVariable(const Type& type)
 {
-	auto re = new Variable(type, addr, false);
+	auto re = new Variable(type, 0, false);
 	m_StaticVariables.emplace_back(re);
+	return re;
+}
+
+Variable* LML::CompileUnit::NewConstantVariable(const Type& type)
+{
+	auto re = new Variable(type, 0, false);
+	m_ConstantVariables.emplace_back(re);
 	return re;
 }
 
 Function* LML::CompileUnit::NewFunction(const Type& return_type, const std::vector<const Type*>& parameters)
 {
-	auto re = new Function(return_type, parameters);
+	auto re = new Function(return_type, parameters, m_Functions.size());
 	m_Functions.emplace_back(re);
 	return re;
 }
@@ -203,6 +220,16 @@ uint64_t LML::CompileUnit::RearrangeStaticVariable(uint64_t base)
 	}
 	for (auto i : m_Functions)
 		base = i->RearrangeStaticVariable(base);
+	return base;
+}
+
+uint64_t LML::CompileUnit::RearrangeConstantVariable(uint64_t base)
+{
+	for (auto i : m_ConstantVariables)
+	{
+		i->m_Address = base;
+		base += i->m_pType->GetSize();
+	}
 	return base;
 }
 
@@ -333,6 +360,11 @@ uint64_t LML::LASMGenerator::GetSystemStaticVariableAddres() const
 	return m_SystemStaticVariableAddress;
 }
 
+uint64_t LML::LASMGenerator::GetConstantVariableAddress() const
+{
+	return m_ConstantVariableAddress;
+}
+
 uint64_t LML::LASMGenerator::GetUserStaticVariableAddress() const
 {
 	return m_UserStaticVariableAddress;
@@ -344,8 +376,9 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 	MemoryManager mm;
 	// system static variable
 	m_SystemStaticVariableAddress = mm.Allocate(24);
-	// system constant variable
-
+	// constant variable
+	m_ConstantVariableAddress = mm.Allocate(cu.GetConstantVariableTotalSize());
+	cu.RearrangeConstantVariable(m_ConstantVariableAddress);
 	// user static variable
 	m_UserStaticVariableAddress = mm.Allocate(cu.GetStaticVariableTotalSize());
 	cu.RearrangeStaticVariable(m_UserStaticVariableAddress);

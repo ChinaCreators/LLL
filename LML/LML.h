@@ -64,11 +64,12 @@ namespace LML
 
 	struct Function
 	{
-		Function(const Type& return_type, const std::vector<const Type*>& parameters);
+		Function(const Type& return_type, const std::vector<const Type*>& parameters, uint64_t func_id);
 		~Function();
 
 		uint64_t GetStaticVariableTotalSize() const;
 
+		uint64_t m_FunctionId;
 		const Type* m_Return;
 		std::vector<const Type*> m_Parameters;
 		const Type* m_pType;
@@ -76,7 +77,7 @@ namespace LML
 		std::vector<Variable*> m_TemporaryVariables;
 		std::vector<ActionGenerator> m_ActionGenerators;
 
-		Variable* NewStaticVariable(const Type& type, uint64_t addr);
+		Variable* NewStaticVariable(const Type& type);
 		Variable* NewTemporaryVariable(const Type& type, uint64_t addr);
 
 		uint64_t RearrangeStaticVariable(uint64_t base);
@@ -95,12 +96,15 @@ namespace LML
 		~CompileUnit();
 
 		uint64_t GetStaticVariableTotalSize() const;
+		uint64_t GetConstantVariableTotalSize() const;
 
 		Type* NewType();
-		Variable* NewStaticVariable(const Type& type, uint64_t addr);
+		Variable* NewStaticVariable(const Type& type);
+		Variable* NewConstantVariable(const Type& type);
 		Function* NewFunction(const Type& return_type, const std::vector<const Type*>& parameters);
 
 		uint64_t RearrangeStaticVariable(uint64_t base);
+		uint64_t RearrangeConstantVariable(uint64_t base);
 
 		Type* GetType(uint64_t type_id);
 		Variable* GetStaticVariable(uint64_t var_id);
@@ -111,6 +115,7 @@ namespace LML
 	private:
 		std::vector<Type*> m_Types;
 		std::vector<Variable*> m_StaticVariables;
+		std::vector<Variable*> m_ConstantVariables;
 		std::vector<Function*> m_Functions;
 		uint64_t m_MainFunctionId;
 	};
@@ -144,6 +149,7 @@ namespace LML
 		static std::string LoadVariableAddressToArg(const Variable& var, uint64_t ebp, uint64_t add_buf, uint64_t arg_idx);
 
 		uint64_t GetSystemStaticVariableAddres() const;
+		uint64_t GetConstantVariableAddress() const;
 		uint64_t GetUserStaticVariableAddress() const;
 
 	public:
@@ -151,6 +157,7 @@ namespace LML
 
 	private:
 		uint64_t m_SystemStaticVariableAddress;
+		uint64_t m_ConstantVariableAddress;
 		uint64_t m_UserStaticVariableAddress;
 	};
 
