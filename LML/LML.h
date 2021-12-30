@@ -125,6 +125,7 @@ namespace LML
 	ebp +0
 	esp +8
 	add_buffer +16
+	store_buffer +24
 
 	system constant variable:
 	*/

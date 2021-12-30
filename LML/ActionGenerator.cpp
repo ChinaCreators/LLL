@@ -100,3 +100,52 @@ ActionGenerator LML::GeneratePopAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variab
 	};
 	return re;
 }
+
+ActionGenerator LML::GenerateCopyVariableAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) dst, LML_LAZY(Variable) src)
+{
+	assert(dst().m_pType->m_Id == src().m_pType->m_Id);
+	ActionGenerator re;
+	if ((uint8_t)dst().m_pType->m_RealType & (uint8_t)RealType::BaseType)
+	{
+		re.m_LASMGenerator = [ssvar, dst, src]() -> std::string {
+			std::string str_re;
+			auto ssvar_addr = ssvar();
+			Variable dst_v = dst();
+			Variable src_v = src();
+			uint64_t ebp = ssvar_addr;
+			uint64_t esp = ssvar_addr + 8;
+			uint64_t add_buf = ssvar_addr + 16;
+			uint64_t store_buf = ssvar_addr + 24;
+			str_re += LASMGenerator::LoadVariableAddressToArg(dst_v, ebp, add_buf, 1);
+			str_re += LASMGenerator::Set0A(store_buf);
+			str_re += LASMGenerator::CallExternal("CoreModule:store_" + GetBaseTypeNameById(dst_v.m_pType->m_Id));
+			str_re += LASMGenerator::LoadVariableAddressToArg(src_v, ebp, add_buf, 1);
+			str_re += LASMGenerator::Set0A(store_buf);
+			str_re += LASMGenerator::Ref0();
+			str_re += LASMGenerator::CallExternal("CoreModule:mov_" + GetBaseTypeNameById(dst_v.m_pType->m_Id));
+			return str_re;
+		};
+	}
+	else
+	{
+		re.m_LASMGenerator = [ssvar, dst, src]() -> std::string {
+			std::string str_re;
+			Variable dst_v = dst();
+			Variable src_v = src();
+			for (auto i : dst_v.m_pType->m_MemberVariables)
+			{
+				Variable m_dv(i);
+				Variable m_sv(i);
+				m_dv.m_Address += dst_v.m_Address;
+				m_dv.m_IsTemporary = dst_v.m_IsTemporary;
+				m_sv.m_Address += src_v.m_Address;
+				m_sv.m_IsTemporary = src_v.m_IsTemporary;
+				str_re += GenerateCopyVariableAction(
+							  ssvar, [m_dv]() { return m_dv; }, [m_sv]() { return m_sv; })
+							  .m_LASMGenerator();
+			}
+			return str_re;
+		};
+	}
+	return re;
+}

@@ -375,7 +375,7 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 	std::string re;
 	MemoryManager mm;
 	// system static variable
-	m_SystemStaticVariableAddress = mm.Allocate(24);
+	m_SystemStaticVariableAddress = mm.Allocate(32);
 	// constant variable
 	m_ConstantVariableAddress = mm.Allocate(cu.GetConstantVariableTotalSize());
 	cu.RearrangeConstantVariable(m_ConstantVariableAddress);
