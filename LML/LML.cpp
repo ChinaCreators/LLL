@@ -239,12 +239,6 @@ Type* LML::CompileUnit::GetType(uint64_t type_id)
 	return m_Types[type_id];
 }
 
-Variable* LML::CompileUnit::GetStaticVariable(uint64_t var_id)
-{
-	assert(var_id < m_StaticVariables.size());
-	return m_StaticVariables[var_id];
-}
-
 Function* LML::CompileUnit::GetFunction(uint64_t func_id)
 {
 	assert(func_id < m_Functions.size());
@@ -344,11 +338,11 @@ std::string LASMGenerator::LoadVariableAddressToArg(const Variable& var, uint64_
 	{
 		re += LASMGenerator::Set0A(add_buf);
 		re += LASMGenerator::Set1A(var.m_Address);
-		re += LASMGenerator::CallExternal("CoreModule:store_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		re += LASMGenerator::Set0A(ebp);
 		re += LASMGenerator::Set1A(add_buf);
 		re += LASMGenerator::Set2A(add_buf);
-		re += LASMGenerator::CallExternal("CoreModule:add_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		re += LASMGenerator::CallExternal("CoreModule:add_ui64");
 		re += "set" + std::to_string(arg_idx) + "a " + std::to_string(add_buf) + "\n";
 		re += "ref" + std::to_string(arg_idx) + "\n";
 	}

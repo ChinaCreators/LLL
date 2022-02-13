@@ -107,7 +107,6 @@ namespace LML
 		uint64_t RearrangeConstantVariable(uint64_t base);
 
 		Type* GetType(uint64_t type_id);
-		Variable* GetStaticVariable(uint64_t var_id);
 		Function* GetFunction(uint64_t func_id);
 
 		void SetMainFunctionId(uint64_t func_id);
