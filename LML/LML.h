@@ -49,10 +49,10 @@ namespace LML
 	struct Type
 	{
 		Type();
-		uint64_t m_Id;
 		uint64_t m_SelfSize;
 		std::vector<Variable> m_MemberVariables;
 		RealType m_RealType;
+		char m_BaseTypeSuffix[8];
 
 		uint64_t GetSize() const;
 	};
@@ -64,12 +64,12 @@ namespace LML
 
 	struct Function
 	{
-		Function(const Type& return_type, const std::vector<const Type*>& parameters, uint64_t func_id);
+		Function(const Type& return_type, const std::vector<const Type*>& parameters, const std::string& name);
 		~Function();
 
 		uint64_t GetStaticVariableTotalSize() const;
 
-		uint64_t m_FunctionId;
+		std::string m_Name;
 		const Type* m_Return;
 		std::vector<const Type*> m_Parameters;
 		const Type* m_pType;
@@ -85,8 +85,6 @@ namespace LML
 
 	class LASMGenerator;
 
-	std::string GetBaseTypeNameById(uint64_t id);
-
 	class CompileUnit
 	{
 	public:
@@ -101,22 +99,27 @@ namespace LML
 		Type* NewType();
 		Variable* NewStaticVariable(const Type& type);
 		Variable* NewConstantVariable(const Type& type);
-		Function* NewFunction(const Type& return_type, const std::vector<const Type*>& parameters);
+		Function* NewFunction(const Type& return_type, const std::vector<const Type*>& parameters,const std::string& name);
 
 		uint64_t RearrangeStaticVariable(uint64_t base);
 		uint64_t RearrangeConstantVariable(uint64_t base);
 
-		Type* GetType(uint64_t type_id);
-		Function* GetFunction(uint64_t func_id);
+		void SetMainFunction(const Function* pfunc);
 
-		void SetMainFunctionId(uint64_t func_id);
-
+		const Type* GetI8()const;
+		const Type* GetUI8()const;
+		const Type* GetI32()const;
+		const Type* GetUI32()const;
+		const Type* GetI64()const;
+		const Type* GetUI64()const;
+		const Type* GetF()const;
+		const Type* GetD()const;
 	private:
 		std::vector<Type*> m_Types;
 		std::vector<Variable*> m_StaticVariables;
 		std::vector<Variable*> m_ConstantVariables;
 		std::vector<Function*> m_Functions;
-		uint64_t m_MainFunctionId;
+		const Function* m_pMainFunction;
 	};
 
 	/*

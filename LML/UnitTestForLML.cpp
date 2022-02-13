@@ -10,16 +10,11 @@ using namespace LML;
 void TestCompileUnit()
 {
 	CompileUnit cu;
-	Type& t_int64 = *cu.NewType();
-	t_int64.m_SelfSize = 8;
-	assert(t_int64.m_Id == 8);
-
-	Type& t_int32 = *cu.NewType();
-	t_int32.m_SelfSize = 4;
-	assert(t_int32.m_Id == 9);
+	const Type& t_int64 = *cu.GetI64();
+	const Type& t_int32 = *cu.GetI32();
 
 	Variable& sv1 = *cu.NewStaticVariable(t_int64);
-	Function& func = *cu.NewFunction(t_int64, {&t_int32, &t_int32});
+	Function& func = *cu.NewFunction(t_int64, {&t_int32, &t_int32},"test_func");
 	Variable& sv2 = *func.NewStaticVariable(t_int32);
 	Variable& tv1 = *func.NewTemporaryVariable(t_int64, 0);
 
@@ -38,16 +33,17 @@ void TestLASMGenerator()
 	CompileUnit cu;
 	LASMGenerator gen;
 
-	Type& t_uint8 = *cu.GetType(1);
-	Type& t_int64 = *cu.GetType(4);
-	Type& t_int32 = *cu.GetType(2);
+	const Type& t_uint8 = *cu.GetUI8();
+	const Type& t_int64 = *cu.GetI64();
+	const Type& t_int32 = *cu.GetI32();
 	Type& t_struct1 = *cu.NewType();
 	t_struct1.m_RealType = RealType::CompositeType;
 	t_struct1.m_MemberVariables.emplace_back(t_int64, 0, true);
 	t_struct1.m_MemberVariables.emplace_back(t_int32, 8, true);
 
 	Variable& sv1 = *cu.NewStaticVariable(t_int64);
-	Function& func = *cu.NewFunction(t_int64, {&t_int32, &t_int32});
+	Function& func = *cu.NewFunction(t_int64, {&t_int32, &t_int32},"test_func");
+	cu.SetMainFunction(&func);
 	Variable& sv2 = *func.NewStaticVariable(t_int32);
 	Variable& tv1 = *func.NewTemporaryVariable(t_int64, 0);
 	Variable& sv3 = *cu.NewStaticVariable(t_struct1);

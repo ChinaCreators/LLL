@@ -34,8 +34,9 @@ LML::Variable::Variable(const Type& type, uint64_t addr, bool is_tmp)
 }
 
 LML::Type::Type()
-	: m_Id(0), m_SelfSize(0), m_RealType(RealType::UnknownType)
+	: m_SelfSize(0), m_RealType(RealType::UnknownType)
 {
+	memset(m_BaseTypeSuffix,0,sizeof(m_BaseTypeSuffix));
 }
 
 uint64_t LML::Type::GetSize() const
@@ -46,8 +47,8 @@ uint64_t LML::Type::GetSize() const
 	return re;
 }
 
-LML::Function::Function(const Type& return_type, const std::vector<const Type*>& parameters, uint64_t func_id)
-	: m_Return(&return_type), m_Parameters(parameters), m_pType(nullptr), m_FunctionId(func_id)
+LML::Function::Function(const Type& return_type, const std::vector<const Type*>& parameters, const std::string& name)
+	: m_Return(&return_type), m_Parameters(parameters), m_pType(nullptr), m_Name(name)
 {
 }
 
@@ -91,65 +92,48 @@ uint64_t LML::Function::RearrangeStaticVariable(uint64_t base)
 	return base;
 }
 
-std::string LML::GetBaseTypeNameById(uint64_t id)
-{
-	if (id == 0)
-		return "i8";
-	else if (id == 1)
-		return "ui8";
-	else if (id == 2)
-		return "i32";
-	else if (id == 3)
-		return "ui32";
-	else if (id == 4)
-		return "i64";
-	else if (id == 5)
-		return "ui64";
-	else if (id == 6)
-		return "f";
-	else if (id == 7)
-		return "d";
-	else
-	{
-		std::cout << "error type id:\t" << id << std::endl;
-		abort();
-	}
-}
-
 LML::CompileUnit::CompileUnit()
-	: m_MainFunctionId(0)
+	: m_pMainFunction(nullptr)
 {
 	Type* i8 = NewType();	 // 0
 	i8->m_RealType = RealType::BaseType;
 	i8->m_SelfSize = 1;
+	strcpy(i8->m_BaseTypeSuffix,"i8");
 
 	Type* ui8 = NewType();	  // 1
 	ui8->m_RealType = RealType::BaseType;
 	ui8->m_SelfSize = 1;
+	strcpy(ui8->m_BaseTypeSuffix,"ui8");
 
 	Type* i32 = NewType();	  // 2
 	i32->m_RealType = RealType::BaseType;
 	i32->m_SelfSize = 4;
+	strcpy(i32->m_BaseTypeSuffix,"i32");
 
 	Type* ui32 = NewType();	   // 3
 	ui32->m_RealType = RealType::BaseType;
 	ui32->m_SelfSize = 4;
+	strcpy(ui32->m_BaseTypeSuffix,"ui32");
 
 	Type* i64 = NewType();	  // 4
 	i64->m_RealType = RealType::BaseType;
 	i64->m_SelfSize = 8;
+	strcpy(i64->m_BaseTypeSuffix,"i64");
 
 	Type* ui64 = NewType();	   // 5
 	ui64->m_RealType = RealType::BaseType;
 	ui64->m_SelfSize = 8;
+	strcpy(ui64->m_BaseTypeSuffix,"ui64");
 
 	Type* f = NewType();	// 6
 	f->m_RealType = RealType::BaseType;
 	f->m_SelfSize = 4;
+	strcpy(f->m_BaseTypeSuffix,"f");
 
 	Type* d = NewType();	// 7
 	d->m_RealType = RealType::BaseType;
 	d->m_SelfSize = 8;
+	strcpy(d->m_BaseTypeSuffix,"d");
 }
 
 LML::CompileUnit::~CompileUnit()
@@ -185,7 +169,6 @@ uint64_t LML::CompileUnit::GetConstantVariableTotalSize() const
 Type* LML::CompileUnit::NewType()
 {
 	auto re = new Type();
-	re->m_Id = m_Types.size();
 	m_Types.emplace_back(re);
 	return re;
 }
@@ -204,9 +187,9 @@ Variable* LML::CompileUnit::NewConstantVariable(const Type& type)
 	return re;
 }
 
-Function* LML::CompileUnit::NewFunction(const Type& return_type, const std::vector<const Type*>& parameters)
+Function* LML::CompileUnit::NewFunction(const Type& return_type, const std::vector<const Type*>& parameters,const std::string& name)
 {
-	auto re = new Function(return_type, parameters, m_Functions.size());
+	auto re = new Function(return_type, parameters, name);
 	m_Functions.emplace_back(re);
 	return re;
 }
@@ -233,22 +216,50 @@ uint64_t LML::CompileUnit::RearrangeConstantVariable(uint64_t base)
 	return base;
 }
 
-Type* LML::CompileUnit::GetType(uint64_t type_id)
+void LML::CompileUnit::SetMainFunction(const Function* pfunc)
 {
-	assert(type_id < m_Types.size());
-	return m_Types[type_id];
+	assert(pfunc);
+	m_pMainFunction = pfunc;
 }
 
-Function* LML::CompileUnit::GetFunction(uint64_t func_id)
+const Type* LML::CompileUnit::GetI8() const
 {
-	assert(func_id < m_Functions.size());
-	return m_Functions[func_id];
+	return m_Types[0];
 }
 
-void LML::CompileUnit::SetMainFunctionId(uint64_t func_id)
+const Type* LML::CompileUnit::GetUI8() const
 {
-	assert(func_id < m_Functions.size());
-	m_MainFunctionId = func_id;
+	return m_Types[1];
+}
+
+const Type* LML::CompileUnit::GetI32() const
+{
+	return m_Types[2];
+}
+
+const Type* LML::CompileUnit::GetUI32() const
+{
+	return m_Types[3];
+}
+
+const Type* LML::CompileUnit::GetI64() const
+{
+	return m_Types[4];
+}
+
+const Type* LML::CompileUnit::GetUI64() const
+{
+	return m_Types[5];
+}
+
+const Type* LML::CompileUnit::GetF() const
+{
+	return m_Types[6];
+}
+
+const Type* LML::CompileUnit::GetD() const
+{
+	return m_Types[7];
 }
 
 std::string LML::LASMGenerator::CallExternal(const std::string& func)
@@ -366,6 +377,7 @@ uint64_t LML::LASMGenerator::GetUserStaticVariableAddress() const
 
 std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 {
+	assert(cu.m_pMainFunction);
 	std::string re;
 	MemoryManager mm;
 	// system static variable
@@ -384,12 +396,11 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 	re += LASMGenerator::Set0A(m_SystemStaticVariableAddress + 8);
 	re += LASMGenerator::Set1A(0);
 	re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-	re += LASMGenerator::Goto("function_" + std::to_string(cu.m_MainFunctionId));
+	re += LASMGenerator::Goto("function_" + cu.m_pMainFunction->m_Name);
 
-	uint64_t func_cnt = 0;
 	for (auto i : cu.m_Functions)
 	{
-		re += LASMGenerator::Label("function_" + std::to_string(func_cnt++));
+		re += LASMGenerator::Label("function_" + i->m_Name);
 		for (auto j : i->m_ActionGenerators)
 			re += j.m_LASMGenerator();
 	}

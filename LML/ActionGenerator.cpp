@@ -17,7 +17,7 @@ ActionGenerator LML::GeneratePushBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LA
 		str_re += LASMGenerator::LoadVariableAddressToArg(var, ebp, add_buf, 1);
 		str_re += LASMGenerator::Set0A(esp);
 		str_re += LASMGenerator::Ref0();
-		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + std::string(var.m_pType->m_BaseTypeSuffix));
 		str_re += LASMGenerator::Set0A(add_buf);
 		str_re += LASMGenerator::Set1A(var.m_pType->GetSize());
 		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
@@ -73,7 +73,7 @@ ActionGenerator LML::GeneratePopBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LAZ
 		str_re += LASMGenerator::LoadVariableAddressToArg(var, ebp, add_buf, 0);
 		str_re += LASMGenerator::Set1A(esp);
 		str_re += LASMGenerator::Ref1();
-		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + GetBaseTypeNameById(var.m_pType->m_Id));
+		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + std::string(var.m_pType->m_BaseTypeSuffix));
 		return str_re;
 	};
 	return re;
@@ -103,7 +103,7 @@ ActionGenerator LML::GeneratePopAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variab
 
 ActionGenerator LML::GenerateCopyVariableBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) dst, LML_LAZY(Variable) src)
 {
-	assert(dst().m_pType->m_Id == src().m_pType->m_Id);
+	assert(dst().m_pType == src().m_pType);
 	assert((uint8_t)dst().m_pType->m_RealType & (uint8_t)RealType::BaseType);
 	ActionGenerator re;
 	re.m_LASMGenerator = [ssvar, dst, src]() -> std::string
@@ -122,7 +122,7 @@ ActionGenerator LML::GenerateCopyVariableBaseTypeAction(LML_LAZY(uint64_t) ssvar
 		str_re += LASMGenerator::LoadVariableAddressToArg(src_v, ebp, add_buf, 1);
 		str_re += LASMGenerator::Set0A(store_buf);
 		str_re += LASMGenerator::Ref0();
-		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + GetBaseTypeNameById(dst_v.m_pType->m_Id));
+		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + std::string(dst_v.m_pType->m_BaseTypeSuffix));
 		return str_re;
 	};
 	return re;
@@ -130,7 +130,7 @@ ActionGenerator LML::GenerateCopyVariableBaseTypeAction(LML_LAZY(uint64_t) ssvar
 
 ActionGenerator LML::GenerateCopyVariableAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) dst, LML_LAZY(Variable) src)
 {
-	assert(dst().m_pType->m_Id == src().m_pType->m_Id);
+	assert(dst().m_pType == src().m_pType);
 	if ((uint8_t)dst().m_pType->m_RealType & (uint8_t)RealType::BaseType)
 		return GenerateCopyVariableBaseTypeAction(ssvar, dst, src);
 

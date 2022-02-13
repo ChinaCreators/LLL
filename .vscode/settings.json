@@ -86,7 +86,20 @@
 		"cfenv": "cpp",
 		"cinttypes": "cpp",
 		"__functional_base_03": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"list": "cpp",
+		"xfacet": "cpp",
+		"xhash": "cpp",
+		"xiosbase": "cpp",
+		"xlocale": "cpp",
+		"xlocinfo": "cpp",
+		"xlocnum": "cpp",
+		"xmemory": "cpp",
+		"xstddef": "cpp",
+		"xstring": "cpp",
+		"xtr1common": "cpp",
+		"xtree": "cpp",
+		"xutility": "cpp"
 	},
 	"cmake.configureOnOpen": true
 }
