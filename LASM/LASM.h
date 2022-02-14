@@ -24,6 +24,7 @@ namespace LASM
 	public:
 		uint64_t RunCommands(const Compiler& c);
 
+		void RegisterExternalFunction(const std::string& name,uint64_t (*pfunc)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&));
 	private:
 		std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> m_ExternalFunctionCache;
 	};

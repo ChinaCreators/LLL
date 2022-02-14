@@ -176,10 +176,14 @@ std::vector<std::string> LASM::Compiler::GetExternalFunctionNames() const
 	return re;
 }
 
+void LASM::Runner::RegisterExternalFunction(const std::string& name,uint64_t (*pfunc)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&))
+{
+	m_ExternalFunctionCache.emplace(std::make_pair(name,pfunc));
+}
+
 uint64_t LASM::Runner::RunCommands(const Compiler& c)
 {
 	LLL::VM vm;
-	//todo : get external function loading into vm
 	auto ext_funcs = c.GetExternalFunctionNames();
 	for (auto& m : ext_funcs)
 	{
