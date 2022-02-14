@@ -123,7 +123,7 @@ namespace LML
 	};
 
 	/*
-	system static variable: 24
+	system static variable: 32
 	ebp +0
 	esp +8
 	add_buffer +16
