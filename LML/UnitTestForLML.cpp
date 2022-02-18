@@ -197,7 +197,7 @@ void TestLASMGenerator()
 
 	auto result_str = gen.Generate(cu);
 	std::cout << result_str << std::endl;
-	std::ofstream file("test1_out.lll");
+	std::ofstream file("test1_out.lasm");
 	file << result_str;
 }
 
