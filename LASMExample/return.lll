@@ -1,0 +1,31 @@
+;do destruction about all temporary variables except ret_val
+
+;push ret_val_addr
+LoadVariableAddressToArg(ret_var, ebp, add_buf, 1);
+set0a esp
+ref0
+call_ext CoreModule:store_ui64
+;esp+8
+set0a add_buf
+set1a 8
+call_ext CoreModule:store_ui64
+set0a esp
+set1a add_buf
+set2a esp
+call_ext CoreModule:add_ui64
+
+;get old_pc(ebp-8)
+set0a store_buf
+set1a ebp
+call_ext CoreModule:mov_ui64
+set0a add_buf
+set1a 8
+call_ext CoreModule:store_ui64
+set0a store_buf
+set1a add_buf
+set2a store_buf
+call_ext CoreModule:sub_ui64
+ref0
+
+;goto pc
+goto0

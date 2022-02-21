@@ -1,0 +1,74 @@
+;ebp->*esp
+set0a esp
+ref0
+set1a ebp
+call_ext CoreModule:mov_ui64
+;esp+8
+set0a add_buf
+set1a 8
+call_ext CoreModule:store_ui64
+set0a esp
+set1a add_buf
+set2a esp
+call_ext CoreModule:add_ui64
+
+;PC+1->PC
+;PC->*esp
+set0a esp
+ref0
+set1r 3
+call_ext CoreModule:store_ui64
+;*esp+1->*esp
+set0a add_buf
+set1a 1
+call_ext CoreModule:store_ui64
+set0a esp
+set1a add_buf
+set2a esp
+call_ext CoreModule:add_ui64
+;esp+8
+set0a add_buf
+set1a 8
+call_ext CoreModule:store_ui64
+set0a esp
+set1a add_buf
+set2a esp
+call_ext CoreModule:add_ui64
+
+;do copy operation for args(包括参数入栈for v in pvar GeneratePushAction(ssvar,v))
+
+
+;esp->ebp
+set0a ebp
+set1a esp
+call_ext CoreModule:mov_ui64
+
+;ebp-(paramTotalSize)
+set0a add_buf
+set1a paramTotalSize
+call_ext CoreModule:store_ui64
+set0a ebp
+set1a add_buf
+set2a ebp
+call_ext CoreModule:sub_ui64
+
+;跳转
+goto Label
+
+;pop ret_val_addr
+
+
+;ebp-16->esp
+set0a add_buf
+set1a 16
+call_ext CoreModule:store_ui64
+set0a ebp
+set1a add_buf
+set2a esp
+call_ext CoreModule:sub_ui64
+
+;*esp->ebp
+set1a esp
+ref1
+set0a ebp
+call_ext CoreModule:mov_ui64
