@@ -398,10 +398,10 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 	re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 	re += LASMGenerator::Goto("function_" + cu.m_pMainFunction->m_Name);
 
-	for (auto i : cu.m_Functions)
+	for (const auto& i : cu.m_Functions)
 	{
 		re += LASMGenerator::Label("function_" + i->m_Name);
-		for (auto j : i->m_ActionGenerators)
+		for (const auto& j : i->m_ActionGenerators)
 			re += j.m_LASMGenerator();
 	}
 	return re;
