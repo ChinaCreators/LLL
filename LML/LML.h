@@ -67,6 +67,11 @@ namespace LML
 		Function(const Type& return_type, const std::vector<const Type*>& parameters, const std::string& name);
 		~Function();
 
+		Function(const Function&)=delete;
+		Function(Function&&)=delete;
+		Function& operator=(const Function&)=delete;
+		Function& operator=(Function&&)=delete;
+
 		uint64_t GetStaticVariableTotalSize() const;
 
 		std::string m_Name;
@@ -92,6 +97,11 @@ namespace LML
 
 		CompileUnit();
 		~CompileUnit();
+
+		CompileUnit(const CompileUnit&)=delete;
+		CompileUnit(CompileUnit&&)=delete;
+		CompileUnit& operator=(const CompileUnit&)=delete;
+		CompileUnit& operator=(CompileUnit&&)=delete;
 
 		uint64_t GetStaticVariableTotalSize() const;
 		uint64_t GetConstantVariableTotalSize() const;
