@@ -229,23 +229,13 @@ void TestCallAndReturn(){
 	Variable& tv5=*test_addfunc.NewTemporaryVariable(t_int32,4);
 	Variable& tv6=*test_addfunc.NewTemporaryVariable(t_int32,8);
 	std::vector<ActionGenerator> pushAg={ActionGenerator{[ssvar=std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen),&tv1]()->std::string{
-		uint64_t ssvar_addr=ssvar();
-		uint64_t ebp = ssvar_addr;
-		uint64_t esp = ssvar_addr + 8;
-		uint64_t add_buf = ssvar_addr + 16;
-		uint64_t store_buf = ssvar_addr + 24;
 		std::string re;
-		re += LASMGenerator::LoadVariableAddressToArg(tv1, ebp, add_buf, 0);
+		re += LML::GeneratePushAction(ssvar,[&tv1](){return tv1;}).m_LASMGenerator();
 		return re;
 	}
 	},ActionGenerator{[ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen),&tv2]()->std::string{
-		uint64_t ssvar_addr=ssvar();
-		uint64_t ebp = ssvar_addr;
-		uint64_t esp = ssvar_addr + 8;
-		uint64_t add_buf = ssvar_addr + 16;
-		uint64_t store_buf = ssvar_addr + 24;
 		std::string re;
-		re += LASMGenerator::LoadVariableAddressToArg(tv2, ebp, add_buf, 0);
+		re += LML::GeneratePushAction(ssvar,[&tv2](){return tv2	;}).m_LASMGenerator();
 		return re;
 	}}};
 	ActionGenerator popAg{ActionGenerator{[ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen),&tv3]()->std::string{
@@ -255,6 +245,23 @@ void TestCallAndReturn(){
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
 		uint64_t store_buf = ssvar_addr + 24;
+		res += LASMGenerator::Set0A(store_buf);
+		res += LASMGenerator::Set1A(esp);
+		res += LASMGenerator::CallExternal("CoreModule:mov_ui64");
+		res += LASMGenerator::Set0A(add_buf);
+		res += LASMGenerator::Set1A(8);
+		res += LASMGenerator::CallExternal("CoreModule:store_ui64");
+		res += LASMGenerator::Set0A(store_buf);
+		res += LASMGenerator::Set1A(add_buf);
+		res += LASMGenerator::Set2A(store_buf);
+		res += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		//if acceptVar is temporaryVar,need get old ebp
+		//res += LASMGenerator::LoadVariableAddressToArg(tv3,ebp,add_buf,0);----error
+		res += LASMGenerator::Set0A(8);
+		res += LASMGenerator::Set1A(store_buf);
+		res += LASMGenerator::Ref1();
+		res += LASMGenerator::Ref1();
+		res += LASMGenerator::CallExternal("CoreModule:mov_ui32");
 		res += LASMGenerator::Set0A(add_buf);
 		res += LASMGenerator::Set1A(8);
 		res += LASMGenerator::CallExternal("CoreModule:store_ui64");
@@ -262,42 +269,67 @@ void TestCallAndReturn(){
 		res += LASMGenerator::Set1A(add_buf);
 		res += LASMGenerator::Set2A(esp);
 		res += LASMGenerator::CallExternal("CoreModule:sub_ui64");
-		res += LASMGenerator::Set1A(esp);
-		res += LASMGenerator::Ref1();
-		res += LASMGenerator::Ref1();
-		res += LASMGenerator::LoadVariableAddressToArg(tv3,ebp,add_buf,0);
-		res += LASMGenerator::CallExternal("CoreModule:mov_ui32");
 		return res;
 	}}};
-	mainfun.m_ActionGenerators.push_back(ActionGenerator{[&tv1,&tv2,&pushAg,&popAg,&test_addfunc,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
+	mainfun.m_ActionGenerators.push_back(ActionGenerator{[&tv1,&tv2,&tv3,&pushAg,&popAg,&test_addfunc,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
 		std::string re;
 		uint64_t ssvar_addr=ssvar();
 		uint64_t ebp = ssvar_addr;
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
 		uint64_t store_buf = ssvar_addr + 24;
-		re+=LASMGenerator::LoadVariableAddressToArg(tv1,ebp,add_buf,0);
+		re += LASMGenerator::LoadVariableAddressToArg(tv1,ebp,add_buf,0);
 		re += LASMGenerator::CallExternal("CoreModule:read_ui32");
-		re+=LASMGenerator::LoadVariableAddressToArg(tv2,ebp,add_buf,0);
+		re += LASMGenerator::LoadVariableAddressToArg(tv2,ebp,add_buf,0);
 		re += LASMGenerator::CallExternal("CoreModule:read_ui32");
-		
+		re += LASMGenerator::LoadVariableAddressToArg(tv3,ebp,add_buf,0);
+		re += LASMGenerator::Set1A(0);
+		re += LASMGenerator::CallExternal("CoreModule:store_ui32");
+		re += LASMGenerator::Set0A(add_buf);
+		re += LASMGenerator::Set1A(12);
+		re += LASMGenerator::CallExternal("CoreModule:store_ui64");
+		re += LASMGenerator::Set0A(esp);
+		re += LASMGenerator::Set1A(add_buf);
+		re += LASMGenerator::Set2A(esp);
+		re += LASMGenerator::CallExternal("CoreModule:add_ui64");
 		re+=LML::GenerateCallAction(ssvar,[&test_addfunc]()->Function&{return test_addfunc;},
 		[&pushAg](){return pushAg;},[&popAg](){return popAg;}).m_LASMGenerator();
-		re+=LASMGenerator::Set0A(8);
-		re+=LASMGenerator::CallExternal("CoreModule:print_a0");
+		//test
+		// re += LASMGenerator::Set0A(0);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(4);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(8);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(12);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui64");
+		// re += LASMGenerator::Set0A(20);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui64");
+		// re += LASMGenerator::Set0A(28);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(32);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(36);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui32");
+		// re += LASMGenerator::Set0A(40);
+		// re+=LASMGenerator::CallExternal("CoreModule:print_ui64");
+
+		re += LASMGenerator::LoadVariableAddressToArg(tv3,ebp,add_buf,0);
+		re+=LASMGenerator::CallExternal("CoreModule:print_ui64");
 		return re;
 	}});
-	test_addfunc.m_ActionGenerators.push_back(ActionGenerator{[tv4,tv5,tv6,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
+	test_addfunc.m_ActionGenerators.push_back(ActionGenerator{[&tv4,&tv5,&tv6,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
 		std::string re;
 		uint64_t ssvar_addr=ssvar();
 		uint64_t ebp = ssvar_addr;
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
 		uint64_t store_buf = ssvar_addr + 24;
-		re+=LASMGenerator::LoadVariableAddressToArg(tv4,ebp,add_buf,0);
-		re+=LASMGenerator::LoadVariableAddressToArg(tv5,ebp,add_buf,1);
-		re+=LASMGenerator::LoadVariableAddressToArg(tv6,ebp,add_buf,2);
-		re+=LASMGenerator::CallExternal("CoreModule:add_ui32");
+		re+=LML::GeneratePushAction(ssvar,[&tv6](){return tv6;}).m_LASMGenerator();
+		re +=LASMGenerator::Set0A(28);
+		re +=LASMGenerator::Set1A(32);
+		re +=LASMGenerator::Set2A(36);
+		re += LASMGenerator::CallExternal("CoreModule:add_ui32");
 		re+=LML::GenerateReturnAction(ssvar,[&tv6](){return tv6;}).m_LASMGenerator();
 		return re;
 	}});

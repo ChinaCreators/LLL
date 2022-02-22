@@ -171,40 +171,21 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
 		uint64_t store_buf =ssvar_addr +24;
-		Function targetfunc=tarfunc();
+		Function& targetfunc=tarfunc();
 		//ebp->*esp
 		str_re += LASMGenerator::Set0A(esp);
 		str_re += LASMGenerator::Ref0();
 		str_re += LASMGenerator::Set1A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
-		//esp+8
+		//esp+16  store ebp and set space for pc
 		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(8);
+		str_re += LASMGenerator::Set1A(16);
 		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		str_re += LASMGenerator::Set0A(esp);
 		str_re += LASMGenerator::Set1A(add_buf);
 		str_re += LASMGenerator::Set2A(esp);
 		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
-		//pc+1->pc(pc->*esp   *esp+1->*esp)
-		str_re += LASMGenerator::Set0A(esp);	
-		str_re += LASMGenerator::Ref0();
-		str_re += LASMGenerator::Set1R(3);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(1);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");	
-		str_re += LASMGenerator::Set0A(esp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(esp);
-		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
-		//esp+8
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(8);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(esp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(esp);
-		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+
 
 		//do construction about all param and push them
 		if(pushvars){
@@ -229,6 +210,33 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 		str_re += LASMGenerator::Set1A(add_buf);
 		str_re += LASMGenerator::Set2A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+
+		//save pc(pc->*esp   *esp+12->*esp)
+		str_re += LASMGenerator::Set0A(store_buf);
+		str_re += LASMGenerator::Set1A(ebp);
+		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
+		str_re += LASMGenerator::Set0A(add_buf);
+		str_re += LASMGenerator::Set1A(8);
+		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
+		str_re += LASMGenerator::Set0A(store_buf);
+		str_re += LASMGenerator::Set1A(add_buf);
+		str_re += LASMGenerator::Set2A(store_buf);
+		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		str_re += LASMGenerator::Ref0();
+		str_re += LASMGenerator::Set1R(3);
+		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
+		str_re += LASMGenerator::Set0A(add_buf);
+		str_re += LASMGenerator::Set1A(12);
+		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");	
+		str_re += LASMGenerator::Set0A(store_buf);
+		str_re += LASMGenerator::Ref0();
+		str_re += LASMGenerator::Set1A(add_buf);
+		str_re += LASMGenerator::Set2A(store_buf);
+		str_re += LASMGenerator::Ref2();
+		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+
+
+
 		//跳转
 		str_re += LASMGenerator::Goto("function_"+targetfunc.m_Name);
 
@@ -237,6 +245,7 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 			ActionGenerator popretvarActionGenerator=popretval();
 			str_re +=popretvarActionGenerator.m_LASMGenerator();
 		}
+
 		//ebp-16->esp
 		str_re += LASMGenerator::Set0A(add_buf);
 		str_re += LASMGenerator::Set1A(16);
@@ -272,11 +281,10 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 		}
 		if(retvar){
 			Variable ret_var=retvar();
-			//push ret_val_addr
 			str_re += LASMGenerator::LoadVariableAddressToArg(ret_var, ebp, add_buf, 1);
 			str_re += LASMGenerator::Set0A(esp);
 			str_re += LASMGenerator::Ref0();
-			str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
+			str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 			str_re += LASMGenerator::Set0A(add_buf);
 			str_re += LASMGenerator::Set1A(8);
 			str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
@@ -284,11 +292,13 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 			str_re += LASMGenerator::Set1A(add_buf);
 			str_re += LASMGenerator::Set2A(esp);
 			str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+
 		}
 		//get old_pc(epb-8)
 		str_re += LASMGenerator::Set0A(store_buf);
 		str_re += LASMGenerator::Set1A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
+		str_re += LASMGenerator::Set0A(add_buf);
 		str_re += LASMGenerator::Set1A(8);
 		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		str_re += LASMGenerator::Set0A(store_buf);
@@ -296,6 +306,8 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 		str_re += LASMGenerator::Set2A(store_buf);
 		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
 		str_re += LASMGenerator::Ref0();
+		str_re += LASMGenerator::Ref0();
+
 		//goto pc
 		str_re += LASMGenerator::Goto0();
 		return str_re;
