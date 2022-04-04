@@ -3,6 +3,29 @@
 
 using namespace LML;
 
+ActionGenerator LML::GenerateUpdateSsvarAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(uint64_t) addr,LML_LAZY(uint64_t)val,LML_LAZY(std::string)oper){
+	ActionGenerator re;
+	re.m_LASMGenerator = [ssvar,addr,val,oper]() -> std::string{
+		std::string str_re;
+		auto ssvar_addr = ssvar();
+		uint64_t varaddress=addr();
+		uint64_t value=val();
+		std::string operate=oper();
+		uint64_t ebp = ssvar_addr;
+		uint64_t esp = ssvar_addr + 8;
+		uint64_t add_buf = ssvar_addr + 16;
+		str_re += LASMGenerator::Set0A(add_buf);
+		str_re += LASMGenerator::Set1A(value);
+		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
+		str_re += LASMGenerator::Set0A(varaddress);
+		str_re += LASMGenerator::Set1A(add_buf);
+		str_re += LASMGenerator::Set2A(varaddress);
+		str_re += LASMGenerator::CallExternal("CoreModule:"+operate+"_ui64");
+		return str_re;
+	};
+	return re;
+}
+
 ActionGenerator LML::GeneratePushBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) gvar)
 {
 	assert((uint8_t)gvar().m_pType->m_RealType & (uint8_t)RealType::BaseType);
@@ -14,17 +37,13 @@ ActionGenerator LML::GeneratePushBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LA
 		uint64_t ebp = ssvar_addr;
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
+		uint64_t value=var.m_pType->GetSize();
 		str_re += LASMGenerator::LoadVariableAddressToArg(var, ebp, add_buf, 1);
 		str_re += LASMGenerator::Set0A(esp);
 		str_re += LASMGenerator::Ref0();
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_" + std::string(var.m_pType->m_BaseTypeSuffix));
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(var.m_pType->GetSize());
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(esp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(esp);
-		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[esp](){return esp;},
+		[value](){return value;},[](){return "add";}).m_LASMGenerator();
 		return str_re;
 	};
 	return re;
@@ -63,13 +82,9 @@ ActionGenerator LML::GeneratePopBaseTypeAction(LML_LAZY(uint64_t) ssvar, LML_LAZ
 		uint64_t ebp = ssvar_addr;
 		uint64_t esp = ssvar_addr + 8;
 		uint64_t add_buf = ssvar_addr + 16;
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(var.m_pType->GetSize());
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(esp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(esp);
-		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		uint64_t value=var.m_pType->GetSize();
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[esp](){return esp;},
+		[value](){return value;},[](){return "sub";}).m_LASMGenerator();
 		str_re += LASMGenerator::LoadVariableAddressToArg(var, ebp, add_buf, 0);
 		str_re += LASMGenerator::Set1A(esp);
 		str_re += LASMGenerator::Ref1();
@@ -178,18 +193,12 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 		str_re += LASMGenerator::Set1A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
 		//esp+16  store ebp and set space for pc
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(16);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(esp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(esp);
-		str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[esp](){return esp;},
+		[](){return 16;},[](){return "add";}).m_LASMGenerator();
 
-
-		//do construction about all param and push them
+		//do construction about all param and push them (形参初始化并入栈)
 		if(pushvars){
-			std::vector<ActionGenerator> pushvarsActionGenerator=pushvars();
+			std::vector<LML::ActionGenerator> pushvarsActionGenerator=pushvars();
 			for(auto ag:pushvarsActionGenerator){
 				str_re+=ag.m_LASMGenerator();
 			}
@@ -199,31 +208,21 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 		str_re += LASMGenerator::Set1A(esp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
 		//ebp-(paramTotalSize)
-		str_re += LASMGenerator::Set0A(add_buf);
 		uint64_t paramTotalSize=0;
 		for(auto t:targetfunc.m_Parameters){
 			paramTotalSize+=t->GetSize();
 		}
-		str_re += LASMGenerator::Set1A(paramTotalSize);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(ebp);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(ebp);
-		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[ebp](){return ebp;},
+		[paramTotalSize](){return paramTotalSize;},[](){return "sub";}).m_LASMGenerator();
 
-		//save pc(pc->*esp   *esp+12->*esp)
+		//save pc(pc->*esp   *esp+12->*esp //pc+12 is returnRow)
 		str_re += LASMGenerator::Set0A(store_buf);
 		str_re += LASMGenerator::Set1A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(8);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(store_buf);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(store_buf);
-		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[store_buf](){return store_buf;},
+		[](){return 8;},[](){return "sub";}).m_LASMGenerator();
 		str_re += LASMGenerator::Ref0();
-		str_re += LASMGenerator::Set1R(3);
+		str_re += LASMGenerator::Set1R(3); //pc+12
 		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		str_re += LASMGenerator::Set0A(add_buf);
 		str_re += LASMGenerator::Set1A(12);
@@ -240,7 +239,7 @@ ActionGenerator LML::GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Functi
 		//跳转
 		str_re += LASMGenerator::Goto("function_"+targetfunc.m_Name);
 
-		//pop ret_val_addr and destroy retval
+		//pop ret_val_addr and destroy retval(返回值参数地址处理，和析构返回的变量)
 		if(popretval){
 			ActionGenerator popretvarActionGenerator=popretval();
 			str_re +=popretvarActionGenerator.m_LASMGenerator();
@@ -274,7 +273,7 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 		uint64_t add_buf = ssvar_addr + 16;
 		uint64_t store_buf =ssvar_addr +24;
 		if(dtyvars){
-			//do destruction about all temporary variables except ret_var
+			//do destruction about all temporary variables except ret_var(除返回值外的局部变量析构)
 			std::vector<ActionGenerator> destroyvars=dtyvars();
 			for(auto dv:destroyvars)
 				str_re+=dv.m_LASMGenerator();
@@ -285,26 +284,16 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 			str_re += LASMGenerator::Set0A(esp);
 			str_re += LASMGenerator::Ref0();
 			str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-			str_re += LASMGenerator::Set0A(add_buf);
-			str_re += LASMGenerator::Set1A(8);
-			str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-			str_re += LASMGenerator::Set0A(esp);
-			str_re += LASMGenerator::Set1A(add_buf);
-			str_re += LASMGenerator::Set2A(esp);
-			str_re += LASMGenerator::CallExternal("CoreModule:add_ui64");
+			str_re += LML::GenerateUpdateSsvarAction(ssvar,[esp](){return esp;},
+			[](){return 8;},[](){return "add";}).m_LASMGenerator();
 
 		}
 		//get old_pc(epb-8)
 		str_re += LASMGenerator::Set0A(store_buf);
 		str_re += LASMGenerator::Set1A(ebp);
 		str_re += LASMGenerator::CallExternal("CoreModule:mov_ui64");
-		str_re += LASMGenerator::Set0A(add_buf);
-		str_re += LASMGenerator::Set1A(8);
-		str_re += LASMGenerator::CallExternal("CoreModule:store_ui64");
-		str_re += LASMGenerator::Set0A(store_buf);
-		str_re += LASMGenerator::Set1A(add_buf);
-		str_re += LASMGenerator::Set2A(store_buf);
-		str_re += LASMGenerator::CallExternal("CoreModule:sub_ui64");
+		str_re += LML::GenerateUpdateSsvarAction(ssvar,[store_buf](){return store_buf;},
+		[](){return 8;},[](){return "sub";}).m_LASMGenerator();
 		str_re += LASMGenerator::Ref0();
 		str_re += LASMGenerator::Ref0();
 

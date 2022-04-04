@@ -33,11 +33,13 @@ LML::Variable::Variable(const Type& type, uint64_t addr, bool is_tmp)
 {
 }
 
+
 LML::Type::Type()
 	: m_SelfSize(0), m_RealType(RealType::UnknownType)
 {
 	memset(m_BaseTypeSuffix,0,sizeof(m_BaseTypeSuffix));
 }
+
 
 uint64_t LML::Type::GetSize() const
 {
@@ -46,6 +48,7 @@ uint64_t LML::Type::GetSize() const
 		re += i.m_pType->GetSize();
 	return re;
 }
+
 
 LML::Function::Function(const Type& return_type, const std::vector<const Type*>& parameters, const std::string& name)
 	: m_Return(&return_type), m_Parameters(parameters), m_pType(nullptr), m_Name(name)
