@@ -1,0 +1,232 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						4
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"projectIndex" : 0,
+					"source" : "."
+				},
+				{
+					"build" : "LLL",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "LLL",
+					"targetIndexes" : 
+					[
+						3,
+						6
+					]
+				},
+				{
+					"build" : "LASM",
+					"childIndexes" : 
+					[
+						3
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "LASM",
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						5
+					]
+				},
+				{
+					"build" : "LASM/CoreModule",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "LASM/CoreModule",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "LML",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 4,
+					"source" : "LML",
+					"targetIndexes" : 
+					[
+						4,
+						7
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						4
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "LLL"
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "LLL_lib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						3,
+						6
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "LASM",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1,
+						2,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "CoreModule",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4
+					],
+					"name" : "LML_lib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						4,
+						7
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 3,
+					"id" : "CoreModule::@826eef327c60a992ef2a",
+					"jsonFile" : "target-CoreModule-Debug-b855fc12c05563ebf125.json",
+					"name" : "CoreModule",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "LASM::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-LASM-Debug-0a858e60841da54331bc.json",
+					"name" : "LASM",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "LASM_lib::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-LASM_lib-Debug-8bab6436a1104d738ce5.json",
+					"name" : "LASM_lib",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "LLL_lib::@703188338268a2331fc5",
+					"jsonFile" : "target-LLL_lib-Debug-f8c60cb15e37957b6634.json",
+					"name" : "LLL_lib",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "LML_lib::@0f80f6d1314e7423987a",
+					"jsonFile" : "target-LML_lib-Debug-47060998b52badbc41f4.json",
+					"name" : "LML_lib",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "TestLASM::@f18da3754f7728cf9c8b",
+					"jsonFile" : "target-TestLASM-Debug-b557f9c2ca9268dc4b93.json",
+					"name" : "TestLASM",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "TestLLL::@703188338268a2331fc5",
+					"jsonFile" : "target-TestLLL-Debug-0e3dfbb09fcfc33d87e1.json",
+					"name" : "TestLLL",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "TestLML::@0f80f6d1314e7423987a",
+					"jsonFile" : "target-TestLML-Debug-68b683f5619f5f46957a.json",
+					"name" : "TestLML",
+					"projectIndex" : 4
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/Githubfile/LLL/out/build/x64-Debug",
+		"source" : "D:/Githubfile/LLL"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 2
+	}
+}

@@ -66,7 +66,7 @@ std::map<std::string, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)>
 #ifdef LLL_UNIX
 	auto dl = dlopen(GetDllName(module_name).c_str(), RTLD_NOW | RTLD_GLOBAL);
 #elif defined(LLL_WINDOWS)
-	auto dl = LoadLibraryA(GetDllName(module_name).c_str());
+	auto dl = LoadLibraryA( GetDllName(module_name).c_str());
 #endif
 	std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)> re;
 	void (*func)(std::map<const char*, uint64_t (*)(LLL::Byte*, uint64_t&, uint64_t&, uint64_t&)>&);
