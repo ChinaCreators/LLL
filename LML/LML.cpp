@@ -407,6 +407,10 @@ std::string LML::LASMGenerator::Generate(CompileUnit& cu)
 		re += LASMGenerator::Label("function_" + i->m_Name);
 		for (const auto& j : i->m_ActionGenerators)
 			re += j.m_LASMGenerator();
+		if(i->m_Name==cu.m_pMainFunction->m_Name)
+			re+=LASMGenerator::Goto("main_end");
 	}
+
+	re+= LASMGenerator::Label("main_end");
 	return re;
 }

@@ -151,6 +151,7 @@ call_ext CoreModule:add_ui64
 set0a 65552
 ref0
 call_ext CoreModule:print_ui32
+goto main_end
 :function_fibonacci
 set0a 65552
 set1a 4
@@ -268,6 +269,8 @@ call_ext CoreModule:mov_ui8
 set0a 65552
 ref0
 if
+goto if_true_1
+goto if_false_1
 goto if_true_1
 goto if_false_1
 :if_true_1
@@ -653,3 +656,4 @@ ref0
 goto0
 goto if_return_1
 :if_return_1
+:main_end

@@ -83,4 +83,4 @@ uint64_t VM::Run(const std::vector<Command>& cmds)
 		}
 	}
 	return 0;
-}n
+}
