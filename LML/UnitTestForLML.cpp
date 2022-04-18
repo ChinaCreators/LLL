@@ -443,7 +443,6 @@ void TestFibonacci(){
 	CompileUnit cu;
 	LASMGenerator gen;
 	const Type& t_uint32 = *cu.GetUI32();
-	const Type& t_uint8 = *cu.GetUI8();
 	Function& mainfun = *cu.NewFunction(t_uint32, {&t_uint32, &t_uint32},"main");
 	cu.SetMainFunction(&mainfun);
 	Variable& tv1=*mainfun.NewTemporaryVariable(t_uint32,0);
@@ -453,7 +452,7 @@ void TestFibonacci(){
 	Variable& tv4=*fibonacci.NewTemporaryVariable(t_uint32,4);//fibonacci（x-1)
 	Variable& tv5=*fibonacci.NewTemporaryVariable(t_uint32,8);//fibonacci(x-2)
 	Variable& tv6=*fibonacci.NewTemporaryVariable(t_uint32,12);//add
-	Variable& tv7=*fibonacci.NewTemporaryVariable(t_uint8,16);//if_res
+	Variable& tv7=*fibonacci.NewTemporaryVariable(t_uint32,16);//if_res
 	Variable& tv8=*cu.NewStaticVariable(t_uint32);//1
 
 	std::vector<ActionGenerator> pushAg1={ActionGenerator{[ssvar=std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen),&tv1]()->std::string{
@@ -550,7 +549,7 @@ void TestFibonacci(){
 		[](){return 8;},[](){return "sub";}).m_LASMGenerator();
 		//if acceptVar is temporaryVar,need get old ebp
 		re += LASMGenerator::Set0A(temp_buf);
-		re += LASMGenerator::Set1A(33);//old ebp and now ebp diff_size
+		re += LASMGenerator::Set1A(36);//old ebp and now ebp diff_size
 		re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		re += LASMGenerator::LoadVariableAddressToArg(tv4,ebp,add_buf,1);
 		re += LASMGenerator::Set0A(add_buf);
@@ -583,7 +582,7 @@ void TestFibonacci(){
 		[](){return 8;},[](){return "sub";}).m_LASMGenerator();
 		//if acceptVar is temporaryVar,need get old ebp
 		re += LASMGenerator::Set0A(temp_buf);
-		re += LASMGenerator::Set1A(33);//old ebp and now ebp diff_size
+		re += LASMGenerator::Set1A(36);//old ebp and now ebp diff_size
 		re += LASMGenerator::CallExternal("CoreModule:store_ui64");
 		re += LASMGenerator::LoadVariableAddressToArg(tv5,ebp,add_buf,1);
 		re += LASMGenerator::Set0A(add_buf);
@@ -637,9 +636,9 @@ void TestFibonacci(){
 		re += LML::GeneratePushAction(ssvar,[&tv6](){return tv6;}).m_LASMGenerator();
 		re += LASMGenerator::LoadVariableAddressToArg(tv7,ebp,add_buf,0);
 		re += LASMGenerator::Set1A(0);
-		re += LASMGenerator::CallExternal("CoreModule:store_ui8");
+		re += LASMGenerator::CallExternal("CoreModule:store_ui32");
 		re += LML::GenerateUpdateSsvarAction(ssvar,[esp](){return esp;},
-		[](){return 1;},[](){return "add";}).m_LASMGenerator();
+		[](){return 4;},[](){return "add";}).m_LASMGenerator();
 		//n<=2
 		re += LASMGenerator::Set0A(store_buf);
 		re += LASMGenerator::Set1A(2);
@@ -652,11 +651,12 @@ void TestFibonacci(){
 		re += LASMGenerator::Set1A(store_buf);
 		re += LASMGenerator::CallExternal("CoreModule:ifle_ui32");
 		re += LASMGenerator::LoadVariableAddressToArg(tv7,ebp,add_buf,0);
-		re += LASMGenerator::Ref0();
+		re += LASMGenerator::CallExternal("CoreModule:load_ui32");
+		re += LASMGenerator::Set0R(2);
 		re += LASMGenerator::If();
 		re += LASMGenerator::Goto("if_true_"+std::to_string(if_count));
 		re += LASMGenerator::Goto("if_false_"+std::to_string(if_count));
-		//return x------1
+		//return 1
 		re += LASMGenerator::Label("if_true_"+std::to_string(if_count));
 		re += LML::GenerateReturnAction(ssvar,[&tv8](){return tv8;}).m_LASMGenerator();
 		re += LASMGenerator::Goto("if_return_"+std::to_string(if_count));
@@ -691,12 +691,88 @@ void TestFibonacci(){
 	
 }
 
+void TestIf(){
+	CompileUnit cu;
+	LASMGenerator gen;
+	const Type& t_uint32 = *cu.GetUI32();
+	Function& test_func = *cu.NewFunction(t_uint32, {},"test_func");
+	cu.SetMainFunction(&test_func);
+	Variable& tv1= *test_func.NewTemporaryVariable(t_uint32,0);
+	ActionGenerator condition{[&tv1,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
+		std::string re;
+		uint64_t ssvar_addr=ssvar();
+		uint64_t ebp = ssvar_addr;
+		uint64_t esp = ssvar_addr + 8;
+		uint64_t add_buf = ssvar_addr + 16;
+		uint64_t store_buf = ssvar_addr + 24;
+		re += LASMGenerator::LoadVariableAddressToArg(tv1,ebp,add_buf,0);
+		re += LASMGenerator::CallExternal("CoreModule:read_ui32");
+		re += LASMGenerator::CallExternal("CoreModule:load_ui32");
+		re += LASMGenerator::Set0R(2);
+		return re;
+	}};
+	auto doAg=[](int output)->ActionGenerator{
+		ActionGenerator ag{[output]()->std::string{
+			std::string re;
+			re += LASMGenerator::Set0A(output);
+			re += LASMGenerator::CallExternal("CoreModule:print_a0");
+			return re;
+		}};
+		return ag;
+	};
+	std::vector<ActionGenerator> conditions1{condition};
+	std::vector<ActionGenerator> conditions2{condition,condition};
+	std::vector<ActionGenerator> conditions3{condition,condition,condition};
+	std::vector<ActionGenerator> doAgs1{doAg(1)};
+	std::vector<ActionGenerator> doAgs2{doAg(1),doAg(0)};
+	std::vector<ActionGenerator> doAgs3{doAg(1),doAg(2),doAg(0)};
+	std::vector<ActionGenerator> doAgs4{doAg(1),doAg(2),doAg(3),doAg(0)};
+	auto iftest=[&tv1,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]
+	(std::vector<ActionGenerator>&conditions,std::vector<ActionGenerator>&doAgs,uint64_t if_count)->ActionGenerator{
+		ActionGenerator ag={[ssvar,&tv1,&conditions,&doAgs,if_count](){
+			std::string re;
+			uint64_t ssvar_addr=ssvar();
+			uint64_t ebp = ssvar_addr;
+			uint64_t esp = ssvar_addr + 8;
+			uint64_t add_buf = ssvar_addr + 16;
+			uint64_t store_buf = ssvar_addr + 24;
+			re += LML::GenerateIfAction(ssvar,[&conditions](){return conditions;},
+			[&doAgs](){return doAgs;},[if_count](){return if_count;}).m_LASMGenerator();
+			return re;
+		}};
+		return ag;
+	};
+	test_func.m_ActionGenerators.push_back(ActionGenerator{[&tv1,ssvar= std::bind(&LASMGenerator::GetSystemStaticVariableAddres, &gen)]()->std::string{
+		std::string re;
+		uint64_t ssvar_addr=ssvar();
+		uint64_t ebp = ssvar_addr;
+		uint64_t esp = ssvar_addr + 8;
+		uint64_t add_buf = ssvar_addr + 16;
+		uint64_t store_buf = ssvar_addr + 24;
+		re += LML::GeneratePushAction(ssvar,[&tv1](){return tv1;}).m_LASMGenerator();
+		return re;
+	}});
+	//if
+	test_func.m_ActionGenerators.push_back(iftest(conditions1,doAgs1,0));
+	//if else
+	test_func.m_ActionGenerators.push_back(iftest(conditions1,doAgs2,1));
+	//if elif else
+	test_func.m_ActionGenerators.push_back(iftest(conditions2,doAgs3,2));
+	//if elif elif
+	test_func.m_ActionGenerators.push_back(iftest(conditions3,doAgs4,3));
+	auto result_str = gen.Generate(cu);
+	std::cout << result_str << std::endl;
+	std::ofstream file("if.lasm");
+	file << result_str;
+}
+
 int main()
 {
 	//TestCompileUnit();
 	//TestLASMGenerator();
 	//TestCallAndReturn();
 	//TestCallAndReturnRecursion();
-	TestFibonacci();
+	//TestFibonacci();
+	TestIf();
 	return 0;
 }

@@ -1,0 +1,47 @@
+set0a 65536
+set1a 0
+call_ext CoreModule:store_ui64
+set0a 65544
+set1a 0
+call_ext CoreModule:store_ui64
+goto function_test_func
+:function_test_func
+set0a 65552
+set1a 0
+call_ext CoreModule:store_ui64
+set0a 65536
+set1a 65552
+set2a 65552
+call_ext CoreModule:add_ui64
+set0a 65552
+ref0
+call_ext CoreModule:read_ui32
+set0a 65552
+set1a 4
+call_ext CoreModule:store_ui64
+set0a 65544
+set1a 65552
+set2a 65544
+call_ext CoreModule:add_ui64
+:if_judge_1_0
+set0a 65552
+set1a 0
+call_ext CoreModule:store_ui64
+set0a 65536
+set1a 65552
+set2a 65552
+call_ext CoreModule:add_ui64
+set0a 65552
+ref0
+call_ext CoreModule:load_ui32
+set0r 2
+if
+goto if_true_1_0
+goto if_return_1
+:if_true_1_0
+set0a 1
+call_ext CoreModule:print_a0
+goto if_return_1
+:if_return_1
+goto main_end
+:main_end

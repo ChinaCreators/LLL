@@ -14,4 +14,5 @@ namespace LML
 	ActionGenerator GenerateCopyVariableAction(LML_LAZY(uint64_t) ssvar, LML_LAZY(Variable) dst, LML_LAZY(Variable) src);
 	ActionGenerator GenerateCallAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Function&) tarfunc,LML_LAZY(std::vector<ActionGenerator>) pushvars=nullptr,LML_LAZY(ActionGenerator) popretval=nullptr);
 	ActionGenerator GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Variable)retvar=nullptr,LML_LAZY(std::vector<ActionGenerator>) dtyvars=nullptr);
+	ActionGenerator GenerateIfAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(std::vector<ActionGenerator>)conditions,LML_LAZY(std::vector<ActionGenerator>) ifelseags,LML_LAZY(uint64_t) labelnum);
 }

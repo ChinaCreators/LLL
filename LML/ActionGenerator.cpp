@@ -303,3 +303,54 @@ ActionGenerator LML::GenerateReturnAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(Vari
 	};
 	return re;
 }
+
+// str_re += jdgcondition.m_LASMGenerator();
+// str_re += LASMGenerator::If();
+// str_re += LASMGenerator::Goto("if_true_"+std::to_string(if_count));
+// str_re += LASMGenerator::Goto("if_false_"+std::to_string(if_count));
+// str_re += LASMGenerator::Label("if_true_"+std::to_string(if_count));
+// str_re += ifAg.m_LASMGenerator();
+// str_re += LASMGenerator::Goto("if_return_"+std::to_string(if_count));
+// str_re += LASMGenerator::Label("if_false_"+std::to_string(if_count));
+// str_re += elseAg.m_LASMGenerator();
+// str_re += LASMGenerator::Goto("if_return_"+std::to_string(if_count));
+// str_re += LASMGenerator::Label("if_return_"+std::to_string(if_count));
+ActionGenerator LML::GenerateIfAction(LML_LAZY(uint64_t) ssvar,LML_LAZY(std::vector<ActionGenerator>)conditions,LML_LAZY(std::vector<ActionGenerator>) ifelseags,LML_LAZY(uint64_t) labelnum){
+	ActionGenerator re;
+	re.m_LASMGenerator=[ssvar,conditions,ifelseags,labelnum]()->std::string{
+		std::string str_re;
+		auto ssvar_addr = ssvar();
+		auto jdgconditions=conditions();
+		auto ifelseAgs=ifelseags();
+		uint64_t if_count=labelnum();
+		uint64_t ebp = ssvar_addr;
+		uint64_t esp = ssvar_addr + 8;
+		uint64_t add_buf = ssvar_addr + 16;
+		uint64_t store_buf =ssvar_addr +24;
+		assert(jdgconditions.size()==ifelseAgs.size()||jdgconditions.size()==ifelseAgs.size()-1);
+		for(int i=0;i<jdgconditions.size();i++){
+			str_re += LASMGenerator::Label("if_judge_"+std::to_string(if_count)+"_"+std::to_string(i));
+			str_re += jdgconditions[i].m_LASMGenerator();
+			str_re += LASMGenerator::If();
+			str_re += LASMGenerator::Goto("if_true_"+std::to_string(if_count)+"_"+std::to_string(i));
+			if(i==jdgconditions.size()-1){
+				//最后一次判断条件
+				if(jdgconditions.size()!=ifelseAgs.size())
+					str_re += LASMGenerator::Goto("if_true_"+std::to_string(if_count)+"_"+std::to_string(i+1));
+				else
+					str_re += LASMGenerator::Goto("if_return_"+std::to_string(if_count));
+			}
+			else
+				str_re += LASMGenerator::Goto("if_judge_"+std::to_string(if_count)+"_"+std::to_string(i+1));
+		}
+		for(int i=0;i<ifelseAgs.size();i++){
+			str_re += LASMGenerator::Label("if_true_"+std::to_string(if_count)+"_"+std::to_string(i));
+			str_re += ifelseAgs[i].m_LASMGenerator();
+			str_re += LASMGenerator::Goto("if_return_"+std::to_string(if_count));
+		}
+		str_re += LASMGenerator::Label("if_return_"+std::to_string(if_count));
+		return str_re;
+	};
+
+	return re;
+}

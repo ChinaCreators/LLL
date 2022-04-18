@@ -78,7 +78,7 @@ uint64_t VM::Run(const std::vector<Command>& cmds)
 		}
 		DF_CMD(12)	  //if arg0
 		{
-			if (uint8_t(m_Registers[sm_Arg0]) == 0)
+			if (m_Registers[sm_Arg0] == 0)
 				m_Registers[sm_Pc] += 1;
 		}
 	}

@@ -220,9 +220,9 @@ call_ext CoreModule:add_ui64
 set0a 65552
 ref0
 set1a 0
-call_ext CoreModule:store_ui8
+call_ext CoreModule:store_ui32
 set0a 65552
-set1a 1
+set1a 4
 call_ext CoreModule:store_ui64
 set0a 65544
 set1a 65552
@@ -241,7 +241,7 @@ call_ext CoreModule:add_ui64
 set1a 65552
 ref1
 set0a 65568
-call_ext CoreModule:store_ui64
+call_ext CoreModule:mov_ui32
 set0a 65552
 set1a 16
 call_ext CoreModule:store_ui64
@@ -252,7 +252,6 @@ call_ext CoreModule:add_ui64
 set2a 65552
 ref2
 set0a 65568
-ref0
 set1a 65560
 call_ext CoreModule:ifle_ui32
 set0a 65552
@@ -262,15 +261,11 @@ set0a 65536
 set1a 65552
 set2a 65552
 call_ext CoreModule:add_ui64
-set1a 65552
-ref1
-set0a 65552
-call_ext CoreModule:mov_ui8
 set0a 65552
 ref0
+call_ext CoreModule:load_ui32
+set0r 2
 if
-goto if_true_1
-goto if_false_1
 goto if_true_1
 goto if_false_1
 :if_true_1
@@ -403,7 +398,7 @@ set1a 65552
 set2a 65560
 call_ext CoreModule:sub_ui64
 set0a 65568
-set1a 33
+set1a 36
 call_ext CoreModule:store_ui64
 set0a 65552
 set1a 4
@@ -546,7 +541,7 @@ set1a 65552
 set2a 65560
 call_ext CoreModule:sub_ui64
 set0a 65568
-set1a 33
+set1a 36
 call_ext CoreModule:store_ui64
 set0a 65552
 set1a 8
